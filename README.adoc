@@ -1,0 +1,93 @@
+= camel-attachment-bug
+
+This project shows a bug with camel attachments.
+
+== Reproducer
+
+1. Notice that the camel version is set to `4.10.1`: +
++
+[source, bash]
+----
+$ grep -i '<camel.version>' pom.xml
+        <camel.version>4.10.1</camel.version>
+----
+2. Build and run the application: +
++
+[source, bash]
+----
+$ mvn clean package && java -jar target/camel-attachment-bug-999-SNAPSHOT-executable-jar.jar
+----
+3. Notice that the output shows inconsistent information: +
++
+----
+...
+[                          main] MainSupport                    INFO  Apache Camel (Main) 4.10.1 is starting
+[                          main] BaseMainSupport                INFO  Classpath scanning enabled from base package: de.turing85.camel.attachment.bug
+[                          main] AbstractCamelContext           INFO  Apache Camel 4.10.1 (camel-1) is starting
+[                          main] AbstractCamelContext           INFO  Routes startup (total:1)
+[                          main] AbstractCamelContext           INFO      Started route1 (timer://my-timer)
+[                          main] AbstractCamelContext           INFO  Apache Camel 4.10.1 (camel-1) started in 8ms (build:0ms init:0ms start:8ms boot:376ms)
+[) thread #2 - timer://my-timer] route1                         INFO  hasAttachment: true
+[) thread #2 - timer://my-timer] route1                         INFO  # attachments: 0
+[) thread #2 - timer://my-timer] route1                         INFO  hasAttachment: true
+[) thread #2 - timer://my-timer] route1                         INFO  # attachments: 0
+[) thread #2 - timer://my-timer] route1                         INFO  hasAttachment: true
+[) thread #2 - timer://my-timer] route1                         INFO  # attachments: 0
+...
+----
+4. Downgrade camel to `4.10.0` +
++
+[source, bash]
+----
+$ sed -i 's@<camel\.version>.*@<camel.version>4.10.0</camel.version>@g' pom.xml \
+ && grep -i '<camel.version>' pom.xml
+        <camel.version>4.10.0</camel.version>
+----
+5. Re-build and re-run the application +
++
+[source, bash]
+----
+$ mvn clean package && java -jar target/camel-attachment-bug-999-SNAPSHOT-executable-jar.jar
+----
+6. Notice that the output shows consistent information +
++
+----
+...
+[                          main] MainSupport                    INFO  Apache Camel (Main) 4.10.0 is starting
+[                          main] BaseMainSupport                INFO  Classpath scanning enabled from base package: de.turing85.camel.attachment.bug
+[                          main] AbstractCamelContext           INFO  Apache Camel 4.10.0 (camel-1) is starting
+[                          main] AbstractCamelContext           INFO  Routes startup (total:1)
+[                          main] AbstractCamelContext           INFO      Started route1 (timer://my-timer)
+[                          main] AbstractCamelContext           INFO  Apache Camel 4.10.0 (camel-1) started in 9ms (build:0ms init:0ms start:9ms boot:380ms)
+[) thread #2 - timer://my-timer] route1                         INFO  hasAttachment: false
+[) thread #2 - timer://my-timer] route1                         INFO  # attachments: 0
+[) thread #2 - timer://my-timer] route1                         INFO  hasAttachment: false
+[) thread #2 - timer://my-timer] route1                         INFO  # attachments: 0
+[) thread #2 - timer://my-timer] route1                         INFO  hasAttachment: false
+[) thread #2 - timer://my-timer] route1                         INFO  # attachments: 0
+...
+----
+
+== Contributors ✨
+
+Thanks goes to these wonderful people (https://allcontributors.org/docs/en/emoji-key[emoji key]):
+
+++++
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://turing85.github.io"><img src="https://avatars.githubusercontent.com/u/32584495?v=4?s=100" width="100px;" alt="Marco Bungart"/><br /><sub><b>Marco Bungart</b></sub></a><br /><a href="#code-turing85" title="Code">💻</a> <a href="#maintenance-turing85" title="Maintenance">🚧</a> <a href="#doc-turing85" title="Documentation">📖</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+++++
+
+This project follows the https://github.com/all-contributors/all-contributors[all-contributors] specification. Contributions of any kind welcome!
